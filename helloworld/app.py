@@ -1,14 +1,15 @@
 from chalice import Chalice
 from chalice import BadRequestError
+from chalice import UnauthorizedError
+from chalice import ForbiddenError
 
 app = Chalice(app_name='helloworld')
 app.debug = True
 
 CITIES_TO_STATE = {
-	'seattle': 'WA',
-	'portland': 'OR',
+    'seattle': 'WA',
+    'portland': 'OR',
 }
-
 
 @app.route('/')
 def index():
@@ -19,9 +20,19 @@ def state_of_city(city):
     try:
         return {'state': CITIES_TO_STATE[city]}
     except KeyError:
-    	raise BadRequestError("Unknown city '%s', valid choices are: %s" % (
-    		city,','.join(CITIES_TO_STATE.keys())))
+        raise BadRequestError("Unknown city '%s', valid choices are: %s" % (
+            city,','.join(CITIES_TO_STATE.keys())))
 
+@app.route('/resource/{value}', methods=['PUT'])
+def put_test(value):
+    try:
+        return {"value": value}
+    except KeyError:
+        raise ForbiddenError("Il y'a une erreur...")
+
+@app.route('/myview', methods=['POST', 'PUT'])
+def myview():
+    pass
 
 
 # The view function above will return {"hello": "world"}
